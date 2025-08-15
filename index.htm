@@ -54,10 +54,13 @@ goButton.onclick = async () => {
   const val = searchInput.value.trim();
   
   try {
-    const res = await fetch('https://YOUR-RENDER-SERVICE.onrender.com/api/fetch', {
+    const res = await fetch('https://negproxymentby1.onrender.com/api/fetch', {
       method:'POST',
       headers:{ 'Content-Type':'application/json' },
-      body: JSON.stringify({ url: val.startsWith('http') ? val : '', query: val.startsWith('http') ? '' : val })
+      body: JSON.stringify({ 
+        url: val.startsWith('http') ? val : '', 
+        query: val.startsWith('http') ? '' : val 
+      })
     });
     const data = await res.json();
     if(data.success){
