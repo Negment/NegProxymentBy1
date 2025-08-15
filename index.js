@@ -4,6 +4,11 @@ const fetch = require('node-fetch');
 const app = express();
 app.use(express.json());
 
+// ルートにアクセスしたときの簡単な応答
+app.get('/', (req, res) => {
+  res.send('Proxy server is running!');
+});
+
 // 外部サイトや検索結果を代理取得
 app.post('/api/fetch', async (req, res) => {
   const { url, query } = req.body;
