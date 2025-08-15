@@ -1,15 +1,15 @@
 const express = require('express');
 const fetch = require('node-fetch');
+const cors = require('cors');
 
 const app = express();
 app.use(express.json());
+app.use(cors());  // ← これで全てのオリジンからアクセス可能
 
-// ルートにアクセスしたときの簡単な応答
 app.get('/', (req, res) => {
   res.send('Proxy server is running!');
 });
 
-// 外部サイトや検索結果を代理取得
 app.post('/api/fetch', async (req, res) => {
   const { url, query } = req.body;
   try {
