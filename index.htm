@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>NegProxymentBy1</title>
+<style>
+body { margin:0; font-family: sans-serif; background:#000; color:#fff; }
+header { display:flex; align-items:center; padding:5px; background:#111; position:fixed; top:0; left:0; right:0; z-index:10; }
+#search { flex:1; margin:0 5px; }
+#iframeContainer { margin-top:50px; height: calc(100vh - 50px); }
+iframe { width:100%; height:100%; border:none; }
+</style>
+</head>
+<body>
+
+<header>
+  <button id="toggleE">E</button>
+  <button id="toggleDest">D</button>
+  <input type="text" id="search" placeholder="URLまたは検索キーワード">
+  <button id="go">検索</button>
+</header>
+
+<div id="iframeContainer">
+  <iframe id="displayFrame" src=""></iframe>
+</div>
+
+<script>
+const searchInput = document.getElementById('search');
+const displayFrame = document.getElementById('displayFrame');
+const toggleE = document.getElementById('toggleE');
+const toggleDest = document.getElementById('toggleDest');
+const goButton = document.getElementById('go');
+
+let showDest = true;
+let lastURL = '';
+let searchCleared = false;
+
+toggleE.onclick = () => {
+  if(!searchCleared){
+    searchInput.value = '';
+    searchCleared = true;
+  } else {
+    searchInput.value = lastURL;
+    searchCleared = false;
+  }
+}
+
+toggleDest.onclick = () => {
+  showDest = !showDest;
+  displayFrame.style.display = showDest ? 'block' : 'none';
+}
+
+goButton.onclick = async () => {
+  const val = searchInput.value.trim();
+  
+  try {
+    const res = await fetch('https://YOUR-RENDER-SERVICE.onrender.com/api/fetch', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json' },
+      body: JSON.stringify({ url: val.startsWith('http') ? val : '', query: val.startsWith('http') ? '' : val })
+    });
+    const data = await res.json();
+    if(data.success){
+      const blob = new Blob([data.data], {type:'text/html'});
+      const blobURL = URL.createObjectURL(blob);
+      displayFrame.src = blobURL;
+      lastURL = val;
+      searchCleared = false;
+    } else {
+      alert('取得失敗: '+data.error);
+    }
+  } catch(e){
+    alert('通信エラー: '+e.message);
+  }
+};
+</script>
+
+</body>
+</html>
